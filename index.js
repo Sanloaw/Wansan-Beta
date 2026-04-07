@@ -1,4 +1,3 @@
-const { ensureAuthPath } = require('./lib/session.override')
 const { Client, logger } = require('./lib/client')
 const {
   DATABASE,
@@ -8,6 +7,7 @@ const {
   insertBotLog,
 } = require('./config')
 const { stopInstance } = require('./lib/pm2')
+const { ensureAuthPath } = require('./lib/session.override')
 
 const getBotInstanceId = () => {
   const arg = process.argv.find((a) => a.startsWith('--bot-instance-id='))
@@ -36,8 +36,16 @@ const start = async () => {
     return stopInstance()
   }
 
+  let botInstance
   try {
-    const botInstance = await loadBotInstance(botInstanceId)
+    botInstance = await loadBotInstance(botInstanceId)
+
+    const authPath = ensureAuthPath()
+
+    process.env.SESSION_ID = botInstance.sessionKey
+    process.env.AUTH_PATH = authPath
+
+    process.chdir(authPath)
 
     await updateBotInstance(botInstanceId, {
       status: 'STARTING',
@@ -45,7 +53,7 @@ const start = async () => {
 
     await insertBotLog(botInstanceId, 'info', 'Starting bot instance', {
       sessionKey: botInstance.sessionKey,
-      authPath: botInstance.authPath,
+      authPath,
       botName: botInstance.botName,
     })
   } catch (error) {
