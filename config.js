@@ -1,127 +1,4 @@
-const { Sequelize } = require('sequelize')
-const { existsSync } = require('fs')
-const path = require('path')
-
-const configPath = path.join(__dirname, './config.env')
-if (existsSync(configPath)) require('dotenv').config({ path: configPath })
-
-const toBool = (x) => x == 'true'
-
-const DATABASE_URL = process.env.DATABASE_URL
-if (!DATABASE_URL) {
-  throw new Error('DATABASE_URL is required. SQLite fallback is disabled for multi-session mode.')
-}
-
-const DATABASE = new Sequelize(DATABASE_URL, {
-  dialect: 'postgres',
-  ssl: true,
-  protocol: 'postgres',
-  dialectOptions: {
-    native: true,
-    ssl: { require: true, rejectUnauthorized: false },
-  },
-  logging: false,
-})
-
-const runtime = {
-  botInstanceId: null,
-  botInstance: null,
-  sessionKey: null,
-  authPath: null,
-  botName: 'Wansan',
-  whatsappNumber: null,
-  prefix: '^[.,!]',
-  mode: 'public',
-  status: 'STOPPED',
-}
-
-async function loadBotInstance(botInstanceId) {
-  if (!botInstanceId) {
-    throw new Error('botInstanceId is required')
-  }
-
-  const [rows] = await DATABASE.query(
-    `
-    SELECT *
-    FROM "BotInstance"
-    WHERE "id" = :botInstanceId
-    LIMIT 1
-    `,
-    {
-      replacements: { botInstanceId },
-    }
-  )
-
-  if (!rows || !rows.length) {
-    throw new Error(`BotInstance not found: ${botInstanceId}`)
-  }
-
-  const bot = rows[0]
-
-  runtime.botInstanceId = bot.id
-  runtime.botInstance = bot
-  runtime.sessionKey = bot.sessionKey
-  runtime.authPath = bot.authPath
-  runtime.botName = bot.botName || 'Wansan'
-  runtime.whatsappNumber = bot.whatsappNumber || null
-  runtime.prefix = bot.prefix || '^[.,!]'
-  runtime.mode = bot.mode || 'public'
-  runtime.status = bot.status || 'STOPPED'
-
-  return bot
-}
-
-async function updateBotInstance(botInstanceId, data = {}) {
-  const allowedKeys = [
-    'status',
-    'phoneLinked',
-    'whatsappNumber',
-    'lastConnectedAt',
-    'updatedAt',
-  ]
-
-  const keys = Object.keys(data).filter((k) => allowedKeys.includes(k))
-  if (!keys.length) return
-
-  const setClause = keys.map((k, i) => `"${k}" = :${k}`).join(', ')
-
-  await DATABASE.query(
-    `
-    UPDATE "BotInstance"
-    SET ${setClause}, "updatedAt" = NOW()
-    WHERE "id" = :botInstanceId
-    `,
-    {
-      replacements: {
-        botInstanceId,
-        ...data,
-      },
-    }
-  )
-}
-
-async function insertBotLog(botInstanceId, level, message, meta = null) {
-  try {
-    await DATABASE.query(
-      `
-      INSERT INTO "BotLog" ("id", "botInstanceId", "level", "message", "meta", "createdAt")
-      VALUES (gen_random_uuid()::text, :botInstanceId, :level, :message, CAST(:meta AS jsonb), NOW())
-      `,
-      {
-        replacements: {
-          botInstanceId,
-          level,
-          message,
-          meta: meta ? JSON.stringify(meta) : null,
-        },
-      }
-    )
-  } catch (error) {
-    console.error('Failed to insert bot log:', error.message)
-  }
-}
-
-module.exports = {
+const exported = {
   VERSION: require('./package.json').version,
   DATABASE,
 
@@ -129,12 +6,6 @@ module.exports = {
   loadBotInstance,
   updateBotInstance,
   insertBotLog,
-
-  SESSION_ID: () => runtime.sessionKey || '',
-  PREFIX: () => runtime.prefix || '^[.,!]',
-  BOT_NAME: () => runtime.botName || 'Wansan',
-  AUTH_PATH: () => runtime.authPath || '',
-  MODE: () => runtime.mode || 'public',
 
   SUDO: process.env.SUDO || '',
   HEROKU_APP_NAME: process.env.HEROKU_APP_NAME,
@@ -195,3 +66,40 @@ module.exports = {
   GROQ_MODEL: (process.env.GROQ_MODEL || 'llama-3.3-70b-versatile').trim(),
   GROQ_API_KEY: (process.env.GROQ_API_KEY || '').trim(),
 }
+
+Object.defineProperty(exported, 'SESSION_ID', {
+  enumerable: true,
+  get() {
+    return runtime.sessionKey || ''
+  },
+})
+
+Object.defineProperty(exported, 'PREFIX', {
+  enumerable: true,
+  get() {
+    return runtime.prefix || '^[.,!]'
+  },
+})
+
+Object.defineProperty(exported, 'BOT_NAME', {
+  enumerable: true,
+  get() {
+    return runtime.botName || 'Wansan'
+  },
+})
+
+Object.defineProperty(exported, 'AUTH_PATH', {
+  enumerable: true,
+  get() {
+    return runtime.authPath || ''
+  },
+})
+
+Object.defineProperty(exported, 'MODE', {
+  enumerable: true,
+  get() {
+    return runtime.mode || 'public'
+  },
+})
+
+module.exports = exported
