@@ -1,3 +1,4 @@
+const { ensureAuthPath } = require('./lib/session.override')
 const { Client, logger } = require('./lib/client')
 const {
   DATABASE,
