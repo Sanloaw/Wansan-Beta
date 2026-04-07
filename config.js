@@ -1,56 +1,146 @@
 const { Sequelize } = require('sequelize')
 const { existsSync } = require('fs')
 const path = require('path')
+
 const configPath = path.join(__dirname, './config.env')
-const databasePath = path.join(__dirname, './database.db')
 if (existsSync(configPath)) require('dotenv').config({ path: configPath })
+
 const toBool = (x) => x == 'true'
-const DATABASE_URL =
-  process.env.DATABASE_URL === undefined ? databasePath : process.env.DATABASE_URL
+
+const DATABASE_URL = process.env.DATABASE_URL
+if (!DATABASE_URL) {
+  throw new Error('DATABASE_URL is required. SQLite fallback is disabled for multi-session mode.')
+}
+
+const DATABASE = new Sequelize(DATABASE_URL, {
+  dialect: 'postgres',
+  ssl: true,
+  protocol: 'postgres',
+  dialectOptions: {
+    native: true,
+    ssl: { require: true, rejectUnauthorized: false },
+  },
+  logging: false,
+})
+
+const runtime = {
+  botInstanceId: null,
+  botInstance: null,
+  sessionKey: null,
+  authPath: null,
+  botName: 'Wansan',
+  whatsappNumber: null,
+  prefix: '^[.,!]',
+  mode: 'public',
+  status: 'STOPPED',
+}
+
+async function loadBotInstance(botInstanceId) {
+  if (!botInstanceId) {
+    throw new Error('botInstanceId is required')
+  }
+
+  const [rows] = await DATABASE.query(
+    `
+    SELECT *
+    FROM "BotInstance"
+    WHERE "id" = :botInstanceId
+    LIMIT 1
+    `,
+    {
+      replacements: { botInstanceId },
+    }
+  )
+
+  if (!rows || !rows.length) {
+    throw new Error(`BotInstance not found: ${botInstanceId}`)
+  }
+
+  const bot = rows[0]
+
+  runtime.botInstanceId = bot.id
+  runtime.botInstance = bot
+  runtime.sessionKey = bot.sessionKey
+  runtime.authPath = bot.authPath
+  runtime.botName = bot.botName || 'Wansan'
+  runtime.whatsappNumber = bot.whatsappNumber || null
+  runtime.prefix = bot.prefix || '^[.,!]'
+  runtime.mode = bot.mode || 'public'
+  runtime.status = bot.status || 'STOPPED'
+
+  return bot
+}
+
+async function updateBotInstance(botInstanceId, data = {}) {
+  const allowedKeys = [
+    'status',
+    'phoneLinked',
+    'whatsappNumber',
+    'lastConnectedAt',
+    'updatedAt',
+  ]
+
+  const keys = Object.keys(data).filter((k) => allowedKeys.includes(k))
+  if (!keys.length) return
+
+  const setClause = keys.map((k, i) => `"${k}" = :${k}`).join(', ')
+
+  await DATABASE.query(
+    `
+    UPDATE "BotInstance"
+    SET ${setClause}, "updatedAt" = NOW()
+    WHERE "id" = :botInstanceId
+    `,
+    {
+      replacements: {
+        botInstanceId,
+        ...data,
+      },
+    }
+  )
+}
+
+async function insertBotLog(botInstanceId, level, message, meta = null) {
+  try {
+    await DATABASE.query(
+      `
+      INSERT INTO "BotLog" ("id", "botInstanceId", "level", "message", "meta", "createdAt")
+      VALUES (gen_random_uuid()::text, :botInstanceId, :level, :message, CAST(:meta AS jsonb), NOW())
+      `,
+      {
+        replacements: {
+          botInstanceId,
+          level,
+          message,
+          meta: meta ? JSON.stringify(meta) : null,
+        },
+      }
+    )
+  } catch (error) {
+    console.error('Failed to insert bot log:', error.message)
+  }
+}
+
 module.exports = {
   VERSION: require('./package.json').version,
-  SESSION_ID: (process.env.SESSION_ID || '').trim(),
-  DATABASE:
-    DATABASE_URL === databasePath
-      ? new Sequelize({
-        dialect: 'sqlite',
-        storage: DATABASE_URL,
-        logging: false,
-        retry: {
-          max: 10,
-        },
-        pool: {
-          max: 5,
-          min: 0,
-          acquire: 30000,
-          idle: 10000,
-        },
-        dialectOptions: {
-          busyTimeout: 10000,
-        },
-        hooks: {
-          afterConnect: (conn) => {
-            conn.run('PRAGMA synchronous = NORMAL;')
-            conn.run('PRAGMA busy_timeout = 10000;')
-          },
-        },
-      })
-      : new Sequelize(DATABASE_URL, {
-        dialect: 'postgres',
-        ssl: true,
-        protocol: 'postgres',
-        dialectOptions: {
-          native: true,
-          ssl: { require: true, rejectUnauthorized: false },
-        },
-        logging: false,
-      }),
-  PREFIX: (process.env.PREFIX || '^[.,!]').trim(),
+  DATABASE,
+
+  runtime,
+  loadBotInstance,
+  updateBotInstance,
+  insertBotLog,
+
+  SESSION_ID: () => runtime.sessionKey || '',
+  PREFIX: () => runtime.prefix || '^[.,!]',
+  BOT_NAME: () => runtime.botName || 'Wansan',
+  AUTH_PATH: () => runtime.authPath || '',
+  MODE: () => runtime.mode || 'public',
+
   SUDO: process.env.SUDO || '',
   HEROKU_APP_NAME: process.env.HEROKU_APP_NAME,
   HEROKU_API_KEY: process.env.HEROKU_API_KEY,
   BRANCH: 'master',
-  STICKER_PACKNAME: process.env.STICKER_PACKNAME || '❤️,LyFE',
+  STICKER_PACKNAME: process.env.STICKER_PACKNAME || 'LyFE',
   ALWAYS_ONLINE: process.env.ALWAYS_ONLINE,
   LOG_MSG: process.env.LOG_MSG || 'false',
   RMBG_KEY: process.env.RMBG_KEY || 'null',
@@ -84,7 +174,7 @@ module.exports = {
   ANTI_BOT_MESSAGE: process.env.ANTI_BOT_MESSAGE || '&mention removed',
   WARN_MESSAGE:
     process.env.WARN_MESSAGE ||
-    '⚠️WARNING⚠️\n*User :* &mention\n*Warn :* &warn\n*Remaining :* &remaining',
+    'WARNING\n*User :* &mention\n*Warn :* &warn\n*Remaining :* &remaining',
   WARN_RESET_MESSAGE:
     process.env.WARN_RESET_MESSAGE || `WARN RESET\nUser : &mention\nRemaining : &remaining`,
   WARN_KICK_MESSAGE: process.env.WARN_KICK_MESSAGE || '&mention kicked',
