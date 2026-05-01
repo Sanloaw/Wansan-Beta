@@ -161,12 +161,16 @@
     },
     "delete": {
       "desc": "مكافحة الحذف: استعادة الرسائل المحذوفة",
-      "example": "> *أمثلة الاستخدام:*\n- delete p - إرسال الرسائل المحذوفة إلى دردشتك/المشرف\n- delete g - إرسال الرسائل المحذوفة في نفس المجموعة\n- delete off - تعطيل مكافحة الحذف\n- delete <jid> - إرسال الرسائل المحذوفة إلى JID محدد",
+      "example": "> *Usage Examples:*\n- delete g - Send deleted msgs in same chat\n- delete p - Send deleted msgs to sudo\n- delete g pm - Same chat, PMs only\n- delete g gm - Same chat, groups only\n- delete p no-gm - To sudo, exclude groups\n- delete p no-pm - To sudo, exclude PMs\n- delete <jid> - Send to specific JID\n- delete off - Disable\n\n*Scopes:* pm, gm, no-pm, no-gm",
       "invalid_jid": "*خطأ:* _معرف JID غير صالح_",
-      "dlt_msg_jid": " _سيتم إرسال الرسائل المحذوفة إلى: {0}_",
       "dlt_msg_disable": "تم تعطيل مكافحة الحذف.",
-      "dlt_msg_sudo": "_سيتم إرسال الرسائل المحذوفة إلى دردشتك أو المشرف._",
-      "dlt_msg_chat": "_سيتم إرسال الرسائل المحذوفة إلى الدردشة نفسها._"
+      "dlt_dest_jid": "_سيتم إرسال الرسائل المحذوفة إلى: {0}_",
+      "dlt_dest_sudo": "_سيتم إرسال الرسائل المحذوفة إلى دردشتك أو المشرف._",
+      "dlt_dest_chat": "_سيتم إرسال الرسائل المحذوفة إلى الدردشة نفسها._",
+      "dlt_scope_pm": "📌 _Only for personal chats_",
+      "dlt_scope_gm": "📌 _Only for group chats_",
+      "dlt_scope_no_pm": "📌 _Excluding personal chats_",
+      "dlt_scope_no_gm": "📌 _Excluding group chats_"
     },
     "dlt": {
       "desc": "حذف الرسائل التي تم الرد عليها"
@@ -885,6 +889,19 @@
       "desc": "إدارة إعدادات منع منشن الجروبات 🛡️",
       "ignore_prompt": "*يا باشا، ابعت JID عشان أتجاهله.* 🕵️‍♂️"
     },
+    "antigstatus": {
+      "usage": "> الاستخدام:\n- antigstatus on | off — تمكين أو تعطيل حذف حالات الجروب من غير المشرفين\n- antigstatus ignore jid,jid,... — تجاهل الميزة في مجموعات معيّنة\n- antigstatus unignore jid,jid,... — إلغاء التجاهل\n- antigstatus list — عرض المجموعات المتجاهَلة\n- antigstatus clear — مسح قائمة التجاهل",
+      "filter": "تم تحديث معرفات JID التي سيتم تجاهلها لحماية حالات المجموعة.",
+      "enabled": "تم تمكين حماية حالات المجموعة.",
+      "disabled": "تم تعطيل حماية حالات المجموعة.",
+      "desc": "إدارة إعدادات حماية حالات الجروبات 🛡️",
+      "ignore_prompt": "*يا باشا، ابعت JID عشان أتجاهله.* 🕵️‍♂️",
+      "unignore_prompt": "*يا باشا، ابعت JID عشان أشيله من قائمة التجاهل.* 🕵️‍♂️",
+      "removed": "تم حذف الـJID من قائمة التجاهل. 🗑️",
+      "list_empty": "*مفيش مجموعات في قائمة التجاهل يا باشا.*",
+      "list_header": "*المجموعات المتجاهَلة:*",
+      "cleared": "*تم مسح قائمة التجاهل.* 🧹"
+    },
     "reminder": {
       "desc": "إضافة تذكير إلى تقويم Google (يدعم اللغة الطبيعية).",
       "usage": "*طريقة استخدام أمر التذكير:*\n\n- reminder <النص> (إضافة موعد)\n- reminder list (عرض المواعيد القادمة)\n- reminder del <المعرف> (حذف موعد)\n- مثال: `reminder tomorrow at 10am meeting` ",
@@ -938,12 +955,16 @@
     },
     "antiedit": {
       "desc": "Anti-edit: تتبع الرسايل اللي اتعدلت وعرض تاريخها",
-      "example": "> *أمثلة الاستخدام:*\n- antiedit p - ابعت سجل التعديلات للشات/sudo بتاعك\n- antiedit g - ابعت سجل التعديلات في نفس الجروب\n- antiedit off - تعطيل anti-edit\n- antiedit <jid> - ابعت سجل التعديلات لـ JID معين",
+      "example": "> *Usage Examples:*\n- antiedit g - Send edit history in same chat\n- antiedit p - Send edit history to sudo\n- antiedit g pm - Same chat, PMs only\n- antiedit g gm - Same chat, groups only\n- antiedit p no-gm - To sudo, exclude groups\n- antiedit p no-pm - To sudo, exclude PMs\n- antiedit <jid> - Send to specific JID\n- antiedit off - Disable\n\n*Scopes:* pm, gm, no-pm, no-gm",
       "invalid_jid": "*خطأ:* _JID غير صالح_",
-      "edit_msg_jid": " _سجل التعديلات هيتبعت لـ: {0}_",
       "edit_msg_disable": "اتعطل anti-edit.",
-      "edit_msg_sudo": "_سجل التعديلات هيتبعت للشات بتاعك أو لـ sudo._",
-      "edit_msg_chat": "_سجل التعديلات هيتبعت في الشات نفسه._"
+      "edit_dest_jid": "_سجل التعديلات هيتبعت لـ: {0}_",
+      "edit_dest_sudo": "_سجل التعديلات هيتبعت للشات بتاعك أو لـ sudo._",
+      "edit_dest_chat": "_سجل التعديلات هيتبعت في الشات نفسه._",
+      "edit_scope_pm": "📌 _Only for personal chats_",
+      "edit_scope_gm": "📌 _Only for group chats_",
+      "edit_scope_no_pm": "📌 _Excluding personal chats_",
+      "edit_scope_no_gm": "📌 _Excluding group chats_"
     },
     "screenshot": {
       "usage": "مثال: screenshot levanter.site",
@@ -1009,7 +1030,11 @@
       "del_not_found": "_{0} مش في القايمة._",
       "del_success": "_{0} اتشال من القايمة._",
       "summary_desc": "للحصول على ملخص الميزانية",
-      "summary_example": "*مثال : summary 1 May 2023, 3 May 2023*"
+      "summary_example": "*مثال : summary 1 May 2023, 3 May 2023*",
+      "budget_desc": "إدخال ميزانية بالذكاء الاصطناعي - فقط اوصف معاملتك",
+      "budget_example": "*اوصف معاملتك بشكل طبيعي*\n\n*أمثلة:*\n_budget صرفت 50 على قهوة_\n_budget استلمت راتب 3000_\n_budget دفعت 200 إيجار_\n_budget تاكسي 15_",
+      "budget_failed": "*لم أتمكن من فهم المعاملة. حاول مرة أخرى.*\n\n_مثال: budget صرفت 50 على قهوة_",
+      "budget_success": "*تم تسجيل {0}*\n_المبلغ: {1}_\n_التصنيف: {2}_\n_ملاحظة: {3}_\n\n*إجمالي {0} هذا الشهر: {4}*"
     },
     "exif": {
       "desc": "استخراج بيانات Exif من ستيكر",

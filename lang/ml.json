@@ -161,12 +161,16 @@
     },
     "delete": {
       "desc": "Anti-delete: Delete cheytha message-ukkal thirichu pidikkaan",
-      "example": "> *Upayogikkunna reethi:*\n- delete p - Delete aaya message ninte chat/sudo-ilekk ayaykkum\n- delete g - Same group-il thanne delete aaya message ayaykkum\n- delete off - Anti-delete off aakkaan\n- delete <jid> - Chila target jid-ilekk ayaykkum",
+      "example": "> *Usage Examples:*\n- delete g - Send deleted msgs in same chat\n- delete p - Send deleted msgs to sudo\n- delete g pm - Same chat, PMs only\n- delete g gm - Same chat, groups only\n- delete p no-gm - To sudo, exclude groups\n- delete p no-pm - To sudo, exclude PMs\n- delete <jid> - Send to specific JID\n- delete off - Disable\n\n*Scopes:* pm, gm, no-pm, no-gm",
       "invalid_jid": "*Error:* _Aa JID pattiilla_",
-      "dlt_msg_jid": " _Delete aaya message-ukkal ivide ayaykkum: {0}_",
       "dlt_msg_disable": "Anti-delete off aayi.",
-      "dlt_msg_sudo": "_Delete aaya message-ukkal ninte chat-ilekk athallengil sudo-ilekk ayaykkum._",
-      "dlt_msg_chat": "_Delete aaya message-ukkal aa group-il thanne ayaykkum._"
+      "dlt_dest_jid": "_Delete aaya message-ukkal ivide ayaykkum: {0}_",
+      "dlt_dest_sudo": "_Delete aaya message-ukkal ninte chat-ilekk athallengil sudo-ilekk ayaykkum._",
+      "dlt_dest_chat": "_Delete aaya message-ukkal aa group-il thanne ayaykkum._",
+      "dlt_scope_pm": "📌 _Only for personal chats_",
+      "dlt_scope_gm": "📌 _Only for group chats_",
+      "dlt_scope_no_pm": "📌 _Excluding personal chats_",
+      "dlt_scope_no_gm": "📌 _Excluding group chats_"
     },
     "dlt": {
       "desc": "Nee reply koduthallo, aa message delete aakkaan"
@@ -885,6 +889,19 @@
       "desc": "Anti group mention settings manage cheyyaan 🛡️",
       "ignore_prompt": "*Boss, ignore cheyyaanulla oru JID kodukku.* 🕵️‍♂️"
     },
+    "antigstatus": {
+      "usage": "> Usage:\n- antigstatus on | off — Anti group status set cheyyaan\n- antigstatus ignore jid,jid,... — Chila groups skip cheyyaan\n- antigstatus unignore jid,jid,... — Skip list-il ninnu kalayuka\n- antigstatus list — Skip list kanaan\n- antigstatus clear — Skip list clear cheyyuka",
+      "filter": "Anti group status skip list update aayitto.",
+      "enabled": "Anti group status on aayi.",
+      "disabled": "Anti group status off aayi.",
+      "desc": "Anti group status settings manage cheyyaan 🛡️",
+      "ignore_prompt": "*Boss, ignore cheyyaanulla oru JID kodukku.* 🕵️‍♂️",
+      "unignore_prompt": "*Boss, unignore cheyyaanulla oru JID kodukku.* 🕵️‍♂️",
+      "removed": "JID skip list-il ninnu maatti. 🗑️",
+      "list_empty": "*Skip list-il oru group-um illa.*",
+      "list_header": "*Skip cheytha groups:*",
+      "cleared": "*Skip list clear aayi.* 🧹"
+    },
     "reminder": {
       "desc": "Google Calendar-il reminder add cheyyaan.",
       "usage": "*Reminder Command Usage:*\n\n- reminder <text> (event add cheyyaan)\n- reminder list (aduthe events kaanaan)\n- reminder del <id> (event delete cheyyaan)\n- Example: `reminder tomorrow at 10am meeting`",
@@ -938,12 +955,16 @@
     },
     "antiedit": {
       "desc": "Anti-edit: Edit cheytha messages track cheythu history kaanikkaan",
-      "example": "> *Usage Examples:*\n- antiedit p - Edit history ninte chat/sudo-ilekku ayaykkaan\n- antiedit g - Edit history aa group-il thanne ayaykkaan\n- antiedit off - Anti-edit off aakkaan\n- antiedit <jid> - Specific JID-ilekk ayaykkaan",
+      "example": "> *Usage Examples:*\n- antiedit g - Send edit history in same chat\n- antiedit p - Send edit history to sudo\n- antiedit g pm - Same chat, PMs only\n- antiedit g gm - Same chat, groups only\n- antiedit p no-gm - To sudo, exclude groups\n- antiedit p no-pm - To sudo, exclude PMs\n- antiedit <jid> - Send to specific JID\n- antiedit off - Disable\n\n*Scopes:* pm, gm, no-pm, no-gm",
       "invalid_jid": "*Error:* _JID thettaanu_",
-      "edit_msg_jid": " _Edit history ivide ayaykkum: {0}_",
       "edit_msg_disable": "Anti-edit off aayi.",
-      "edit_msg_sudo": "_Edit history ninte chat allenkil sudo-ilekk ayaykkum._",
-      "edit_msg_chat": "_Edit history aa chat-il thanne ayaykkum._"
+      "edit_dest_jid": "_Edit history ivide ayaykkum: {0}_",
+      "edit_dest_sudo": "_Edit history ninte chat allenkil sudo-ilekk ayaykkum._",
+      "edit_dest_chat": "_Edit history aa chat-il thanne ayaykkum._",
+      "edit_scope_pm": "📌 _Only for personal chats_",
+      "edit_scope_gm": "📌 _Only for group chats_",
+      "edit_scope_no_pm": "📌 _Excluding personal chats_",
+      "edit_scope_no_gm": "📌 _Excluding group chats_"
     },
     "screenshot": {
       "usage": "Example: screenshot levanter.site",
@@ -1009,7 +1030,11 @@
       "del_not_found": "_{0} list-il illa._",
       "del_success": "_{0} list-il ninnu maatti._",
       "summary_desc": "Budget-inte summary edukkaan",
-      "summary_example": "*Example : summary 1 May 2023, 3 May 2023*"
+      "summary_example": "*Example : summary 1 May 2023, 3 May 2023*",
+      "budget_desc": "AI budget entry - ningalude transaction vivarikku",
+      "budget_example": "*Ningalude transaction naturally vivarikku*\n\n*Examples:*\n_budget coffee-kku 50 chelavaayi_\n_budget salary kitti 3000_\n_budget rent koduthu 200_\n_budget taxi 15_",
+      "budget_failed": "*Transaction manasilaayilla. Veendum try cheyyu.*\n\n_Example: budget coffee-kku 50 chelavaayi_",
+      "budget_success": "*{0} record aayi*\n_Amount: {1}_\n_Category: {2}_\n_Remark: {3}_\n\n*Ee maasam {0} total: {4}*"
     },
     "exif": {
       "desc": "Sticker-il ninnu Exif metadata extract cheyyaan",

@@ -161,12 +161,16 @@
     },
     "delete": {
       "desc": "Антиудаление: Восстановить удаленные сообщения",
-      "example": "> *Примеры использования:*\n- delete p - Отправить удаленные сообщения в ваш чат/суперпользователю\n- delete g - Отправить удаленные сообщения в ту же группу\n- delete off - Отключить антиудаление\n- delete <jid> - Отправить удаленные сообщения на определенный JID",
+      "example": "> *Usage Examples:*\n- delete g - Send deleted msgs in same chat\n- delete p - Send deleted msgs to sudo\n- delete g pm - Same chat, PMs only\n- delete g gm - Same chat, groups only\n- delete p no-gm - To sudo, exclude groups\n- delete p no-pm - To sudo, exclude PMs\n- delete <jid> - Send to specific JID\n- delete off - Disable\n\n*Scopes:* pm, gm, no-pm, no-gm",
       "invalid_jid": "*Ошибка:* _Недействительный JID_",
-      "dlt_msg_jid": " _Удаленные сообщения будут отправлены на: {0}_",
       "dlt_msg_disable": "Антиудаление отключено.",
-      "dlt_msg_sudo": "_Удаленные сообщения будут отправлены в ваш чат или суперпользователю._",
-      "dlt_msg_chat": "_Удаленные сообщения будут отправлены в сам чат._"
+      "dlt_dest_jid": "_Удаленные сообщения будут отправлены на: {0}_",
+      "dlt_dest_sudo": "_Удаленные сообщения будут отправлены в ваш чат или суперпользователю._",
+      "dlt_dest_chat": "_Удаленные сообщения будут отправлены в сам чат._",
+      "dlt_scope_pm": "📌 _Only for personal chats_",
+      "dlt_scope_gm": "📌 _Only for group chats_",
+      "dlt_scope_no_pm": "📌 _Excluding personal chats_",
+      "dlt_scope_no_gm": "📌 _Excluding group chats_"
     },
     "dlt": {
       "desc": "Удалить отвеченные сообщения"
@@ -885,6 +889,19 @@
       "desc": "Управление настройками анти-упоминаний группы 🛡️",
       "ignore_prompt": "*Босс, укажите JID для игнорирования.* 🕵️‍♂️"
     },
+    "antigstatus": {
+      "usage": "> Использование:\n- antigstatus on | off — Включить или отключить защиту от статуса группы\n- antigstatus ignore jid,jid,... — Игнорировать защиту от статуса группы для определённых групп\n- antigstatus unignore jid,jid,... — Убрать из списка игнорирования\n- antigstatus list — Показать список игнорирования\n- antigstatus clear — Очистить список игнорирования",
+      "filter": "Игнорируемые JID обновлены для защиты от статуса группы.",
+      "enabled": "Защита от статуса группы включена.",
+      "disabled": "Защита от статуса группы отключена.",
+      "desc": "Управление настройками анти-статуса группы 🛡️",
+      "ignore_prompt": "*Босс, укажите JID для игнорирования.* 🕵️‍♂️",
+      "unignore_prompt": "*Босс, укажите JID для удаления из списка.* 🕵️‍♂️",
+      "removed": "JID удалены из списка игнорирования. 🗑️",
+      "list_empty": "*В списке игнорирования нет групп.*",
+      "list_header": "*Игнорируемые группы:*",
+      "cleared": "*Список игнорирования очищен.* 🧹"
+    },
     "reminder": {
       "desc": "Управление напоминаниями Google Календаря.",
       "usage": "> *Использование Напоминаний:*\n- `reminder <текст>` - Установить новое напоминание (напр. 'встреча завтра в 10 утра')\n- `reminder list` - Список всех напоминаний\n- `reminder del <id>` - Удалить напоминание",
@@ -938,12 +955,16 @@
     },
     "antiedit": {
       "desc": "Anti-edit: отслеживание отредактированных сообщений и показ истории",
-      "example": "> *Примеры использования:*\n- antiedit p - Отправлять историю правок в ваш чат/sudo\n- antiedit g - Отправлять историю правок в той же группе\n- antiedit off - Отключить anti-edit\n- antiedit <jid> - Отправлять историю правок на конкретный JID",
+      "example": "> *Usage Examples:*\n- antiedit g - Send edit history in same chat\n- antiedit p - Send edit history to sudo\n- antiedit g pm - Same chat, PMs only\n- antiedit g gm - Same chat, groups only\n- antiedit p no-gm - To sudo, exclude groups\n- antiedit p no-pm - To sudo, exclude PMs\n- antiedit <jid> - Send to specific JID\n- antiedit off - Disable\n\n*Scopes:* pm, gm, no-pm, no-gm",
       "invalid_jid": "*Ошибка:* _Неверный JID_",
-      "edit_msg_jid": " _История правок будет отправлена на: {0}_",
       "edit_msg_disable": "Anti-edit отключён.",
-      "edit_msg_sudo": "_История правок будет отправлена в ваш чат или sudo._",
-      "edit_msg_chat": "_История правок будет отправлена в тот же чат._"
+      "edit_dest_jid": "_История правок будет отправлена на: {0}_",
+      "edit_dest_sudo": "_История правок будет отправлена в ваш чат или sudo._",
+      "edit_dest_chat": "_История правок будет отправлена в тот же чат._",
+      "edit_scope_pm": "📌 _Only for personal chats_",
+      "edit_scope_gm": "📌 _Only for group chats_",
+      "edit_scope_no_pm": "📌 _Excluding personal chats_",
+      "edit_scope_no_gm": "📌 _Excluding group chats_"
     },
     "screenshot": {
       "usage": "Пример: screenshot levanter.site",
@@ -1009,7 +1030,11 @@
       "del_not_found": "_{0} нет в списке._",
       "del_success": "_{0} удалён из списка._",
       "summary_desc": "для получения сводки бюджета",
-      "summary_example": "*Пример : summary 1 May 2023, 3 May 2023*"
+      "summary_example": "*Пример : summary 1 May 2023, 3 May 2023*",
+      "budget_desc": "Бюджетная запись с ИИ - просто опишите вашу транзакцию",
+      "budget_example": "*Опишите транзакцию естественным языком*\n\n*Примеры:*\n_budget потратил 50 на кофе_\n_budget получил зарплату 3000_\n_budget заплатил 200 за аренду_\n_budget такси 15_",
+      "budget_failed": "*Не удалось понять транзакцию. Попробуйте снова.*\n\n_Пример: budget потратил 50 на кофе_",
+      "budget_success": "*{0} записано*\n_Сумма: {1}_\n_Категория: {2}_\n_Примечание: {3}_\n\n*Итого {0} за этот месяц: {4}*"
     },
     "exif": {
       "desc": "Извлечь Exif-метаданные из стикера",
